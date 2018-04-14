@@ -1,0 +1,52 @@
+# Note : The Cloudformation Security Group IP address is open by default (testing purpose).
+# You should update Security Group Access with your own IP Address to ensure your instances security.
+#
+---
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+    This template contains the Security Groups and Network Access Control
+    required by our entire stack. We create them in a seperate nested template,
+    so they can be referenced by all of the other nested templates.
+
+Parameters:
+
+  PMServerEnv:
+    Description: "Server Environment name."
+    ConstraintDescription: "Choose an Environment from the drop down"
+    Type: "String"
+
+  PMVPC:
+    Description: "VPC to launch instances into"
+    Type: "AWS::EC2::VPC::Id"
+
+Resources:
+
+# Allow RDS connection from PrivateSubnet only.
+  MyRDSSG:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      VpcId: !Ref "PMVPC"
+      GroupDescription: "Security group for RDS DB Instance."
+      SecurityGroupIngress:
+      - CidrIp: '172.30.0.0/16'
+        FromPort: "3306"
+        IpProtocol: "tcp"
+        ToPort: "3306"
+      - CidrIp: '10.2.0.0/16'
+        FromPort: "3306"
+        IpProtocol: "tcp"
+        ToPort: "3306"
+      SecurityGroupEgress:
+        - IpProtocol: '-1'
+          CidrIp: '0.0.0.0/0'
+      Tags:
+        - Key: "Name"
+          Value: !Sub "${PMServerEnv}-RDSSG"
+
+Outputs:
+
+  MyRDSSG:
+    Description: "A reference to the security group for RDS Bv"
+    Value: !Ref "MyRDSSG"
+    Export:
+      Name: !Sub "${PMServerEnv}-MyRDSSG"

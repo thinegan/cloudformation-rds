@@ -1,0 +1,63 @@
+# Note, You need at least 1 domain and this is not free tier.
+# Pricing : https://aws.amazon.com/route53/pricing/
+#
+---
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+    This template deploys route53 Setup,
+
+Parameters: 
+
+  PMHostedZone:
+    Description: "A reference to the Hosted Zone"
+    Type: "String"
+
+  PMDomainSub:
+    Description: "A reference to the elasticache sub domain name"
+    Type: "String"
+
+  PMDomainSubRO:
+    Description: "Set Sub Domain Name ReadOnly"
+    Type: "String"
+
+  PMRdsEndpointAdd:
+    Description: "A reference to rds endpoint address"
+    Type: "String"
+
+  PMRdsReadEndpointAdd:
+    Description: "A reference to rds readonly endpoint address"
+    Type: "String"
+
+Resources:
+
+  DNSRecordRds:
+    Type: "AWS::Route53::RecordSet"
+    Properties:
+      HostedZoneName: !Sub "${PMHostedZone}."
+      Comment: "DNS name for Rds Endpoint."
+      Name: !Sub "${PMDomainSub}."
+      Type: 'CNAME'
+      TTL: '300'
+      ResourceRecords:
+      - !Ref "PMRdsEndpointAdd"
+
+  DNSRecordRdsRo:
+    Type: "AWS::Route53::RecordSet"
+    Properties:
+      HostedZoneName: !Sub "${PMHostedZone}."
+      Comment: "DNS name for Rds ReadOnly Endpoint."
+      Name: !Sub "${PMDomainSubRO}."
+      Type: 'CNAME'
+      TTL: '300'
+      ResourceRecords:
+      - !Ref "PMRdsReadEndpointAdd"
+
+Outputs:
+
+  RdsRoute53:
+    Description: "A reference to the Route53"
+    Value: !Ref "DNSRecordRds"
+
+  RdsRoRoute53:
+    Description: "A reference to the Route53"
+    Value: !Ref "DNSRecordRdsRo"

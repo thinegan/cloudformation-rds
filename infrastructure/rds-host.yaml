@@ -74,7 +74,6 @@ Resources:
       Parameters:
         default_time_zone: "US/Eastern"
         max_allowed_packet : "16777216"
-        max_connections : "2000"
 
 #   DatabaseCluster:
 #     Type: "AWS::RDS::DBCluster"

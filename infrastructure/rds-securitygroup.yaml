@@ -28,11 +28,7 @@ Resources:
       VpcId: !Ref "PMVPC"
       GroupDescription: "Security group for RDS DB Instance."
       SecurityGroupIngress:
-      - CidrIp: '172.30.0.0/16'
-        FromPort: "3306"
-        IpProtocol: "tcp"
-        ToPort: "3306"
-      - CidrIp: '10.2.0.0/16'
+      - CidrIp: '10.0.0.0/16'
         FromPort: "3306"
         IpProtocol: "tcp"
         ToPort: "3306"

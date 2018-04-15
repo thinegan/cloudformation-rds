@@ -56,10 +56,7 @@ Parameters:
     Type: "String"
     Description: "Database instance class, e.g. db.t2.micro (free tier)"
 
-####### Condition Setup #######
-Conditions: 
-  UseProdEnv: !Equals [ !Ref "PMServerEnv", "prod" ]
-
+###########################################################################################
 Resources:
 
   DbSubnetGroup:
@@ -68,6 +65,16 @@ Resources:
       DBSubnetGroupDescription: !Sub "${PMServerEnv} RDS DB subnet group"
       SubnetIds:
         Ref: "PMPrivateSubnets"
+
+RDSDBClusterParameterGroup:
+  Type: AWS::RDS::DBClusterParameterGroup
+  Properties:
+    Description: CloudFormation Aurora Cluster Parameter Group
+    Family: !Ref "PMDBClusterParameterGroupName"
+    Parameters:
+      time_zone: "US/Eastern"
+      max_allowed_packet : "16777216"
+      max_connections : "2000"
 
   DatabaseCluster:
     Type: "AWS::RDS::DBCluster"
@@ -79,9 +86,9 @@ Resources:
       EngineVersion: !Ref "PMDatabaseEngineVer"
       MasterUsername: !Ref "PMDatabaseUsername"
       MasterUserPassword: !Ref "PMDatabasePassword"
-      DBClusterParameterGroupName: !Ref "PMDBClusterParameterGroupName"
+      DBClusterParameterGroupName: !Ref "RDSDBClusterParameterGroup"
       StorageEncrypted: 'true'
-      BackupRetentionPeriod: '5'
+      BackupRetentionPeriod: '3'
       PreferredBackupWindow: '12:00-13:00'
       PreferredMaintenanceWindow: 'mon:13:00-mon:14:00'
 

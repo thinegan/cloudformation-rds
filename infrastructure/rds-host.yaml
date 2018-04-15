@@ -66,15 +66,15 @@ Resources:
       SubnetIds:
         Ref: "PMPrivateSubnets"
 
-RDSDBClusterParameterGroup:
-  Type: AWS::RDS::DBClusterParameterGroup
-  Properties:
-    Description: CloudFormation Aurora Cluster Parameter Group
-    Family: !Ref "PMDBClusterParameterGroupName"
-    Parameters:
-      time_zone: "US/Eastern"
-      max_allowed_packet : "16777216"
-      max_connections : "2000"
+  RDSDBClusterParameterGroup:
+    Type: "AWS::RDS::DBClusterParameterGroup"
+    Properties:
+      Description: "CloudFormation Aurora Cluster Parameter Group"
+      Family: !Ref "PMDBClusterParameterGroupName"
+      Parameters:
+        default_time_zone: "US/Eastern"
+        max_allowed_packet : "16777216"
+        max_connections : "2000"
 
   DatabaseCluster:
     Type: "AWS::RDS::DBCluster"

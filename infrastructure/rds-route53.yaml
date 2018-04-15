@@ -35,7 +35,7 @@ Resources:
     Properties:
       HostedZoneName: !Sub "${PMHostedZone}."
       Comment: "DNS name for Rds Endpoint."
-      Name: !Sub "${PMDomainSub}."
+      Name: !Sub "${PMDomainSub}.${PMHostedZone}."
       Type: 'CNAME'
       TTL: '300'
       ResourceRecords:
@@ -46,7 +46,7 @@ Resources:
     Properties:
       HostedZoneName: !Sub "${PMHostedZone}."
       Comment: "DNS name for Rds ReadOnly Endpoint."
-      Name: !Sub "${PMDomainSubRO}."
+      Name: !Sub "${PMDomainSubRO}.${PMHostedZone}."
       Type: 'CNAME'
       TTL: '300'
       ResourceRecords:

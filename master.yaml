@@ -71,10 +71,6 @@ Parameters:
     Description: "Db Parameter Groupname"
     Type: "String"
 
-  PMDatabaseName:
-    Description: "Db Name."
-    Type: "String"
-
 ###############################################################################################################
 
 Resources:
@@ -100,7 +96,6 @@ Resources:
         PMServerEnv: !Ref "AWS::StackName"
         PMDatabaseUsername: !Ref "PMDatabaseUsername"
         PMDatabasePassword: !Ref "PMDatabasePassword"
-        PMDatabaseName: !Ref "PMDatabaseName"
         PMDatabaseEngine: !Ref "PMDatabaseEngine"
         PMDatabaseEngineVer: !Ref "PMDatabaseEngineVer"
         PMDatabaseInstanceClass: !Ref "PMDatabaseInstanceClass"

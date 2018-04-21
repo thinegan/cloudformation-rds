@@ -105,30 +105,30 @@ Resources:
         PMPrivateSubnets:
           Fn::ImportValue: !Sub "${PMEnvVPC}-PrivateSubnets"
 
-#   MyDNS:
-#     Type: "AWS::CloudFormation::Stack"
-#     DependsOn:
-#     - "MyRDS"
-#     Properties:
-#       TemplateURL: !Sub "${PMTemplateURL}/rds-route53.yaml"
-#       TimeoutInMinutes: '5'
-#       Parameters:
-#         PMRdsEndpointAdd: !GetAtt "MyRDS.Outputs.RdsEndpointAdd"
-#         PMRdsReadEndpointAdd: !GetAtt "MyRDS.Outputs.RdsReadEndpointAdd"
-#         PMDomainSub: !Ref "PMDomainSub"
-#         PMDomainSubRO: !Ref "PMDomainSubRO"
-#         PMHostedZone: !Ref "PMHostedZone"
+  MyDNS:
+    Type: "AWS::CloudFormation::Stack"
+    DependsOn:
+    - "MyRDS"
+    Properties:
+      TemplateURL: !Sub "${PMTemplateURL}/rds-route53.yaml"
+      TimeoutInMinutes: '5'
+      Parameters:
+        PMRdsEndpointAdd: !GetAtt "MyRDS.Outputs.RdsEndpointAdd"
+        PMRdsReadEndpointAdd: !GetAtt "MyRDS.Outputs.RdsReadEndpointAdd"
+        PMDomainSub: !Ref "PMDomainSub"
+        PMDomainSubRO: !Ref "PMDomainSubRO"
+        PMHostedZone: !Ref "PMHostedZone"
 
-# Outputs:
+Outputs:
 
-#   MyRDSEndpointAdd:
-#     Description: "RDS Endpoint Address to use"
-#     Value: !GetAtt "MyDNS.Outputs.RdsRoute53"
+  MyRDSEndpointAdd:
+    Description: "RDS Endpoint Address to use"
+    Value: !GetAtt "MyDNS.Outputs.RdsRoute53"
 
-#   MyRDSROEndpointAdd:
-#     Description: "RDS ReadOnly Endpoint Address to use"
-#     Value: !GetAtt "MyDNS.Outputs.RdsRoRoute53"
+  MyRDSROEndpointAdd:
+    Description: "RDS ReadOnly Endpoint Address to use"
+    Value: !GetAtt "MyDNS.Outputs.RdsRoRoute53"
 
-#   MyRDSEndpointPort:
-#     Description: "RDS Endpoint Port to use"
-#     Value: !GetAtt "MyRDS.Outputs.RdsEndpointPort"
+  MyRDSEndpointPort:
+    Description: "RDS Endpoint Port to use"
+    Value: !GetAtt "MyRDS.Outputs.RdsEndpointPort"

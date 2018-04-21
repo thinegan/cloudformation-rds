@@ -66,66 +66,74 @@ Resources:
       SubnetIds:
         Ref: "PMPrivateSubnets"
 
-  DatabaseCluster:
-    Type: "AWS::RDS::DBCluster"
+  RDSDBClusterParameterGroup:
+    Type: "AWS::RDS::DBClusterParameterGroup"
     Properties:
-      DBSubnetGroupName: !Ref "DbSubnetGroup"
-      VpcSecurityGroupIds:
-      - Ref: "PMRDSSG"
-      Engine: !Ref "PMDatabaseEngine"
-      EngineVersion: !Ref "PMDatabaseEngineVer"
-      MasterUsername: !Ref "PMDatabaseUsername"
-      MasterUserPassword: !Ref "PMDatabasePassword"
-      DBClusterParameterGroupName: !Ref "PMDBClusterParameterGroupName"
-      StorageEncrypted: 'true'
-      BackupRetentionPeriod: '3'
-      PreferredBackupWindow: '12:00-13:00'
-      PreferredMaintenanceWindow: 'mon:13:00-mon:14:00'
+      Description: "CloudFormation Sample Aurora Cluster Parameter Group"
+      Family: "aurora-mysql5.7"
+      Parameters:
+        time_zone: "US/Eastern"
 
-  Database1:
-    Type: "AWS::RDS::DBInstance"
-    Properties:
-      Engine: !Ref "PMDatabaseEngine"
-      DBClusterIdentifier: !Ref "DatabaseCluster"
-      DBInstanceClass: !Ref "PMDatabaseInstanceClass"
-      DBSubnetGroupName: !Ref "DbSubnetGroup"
-      DBInstanceIdentifier: !Sub "${PMDBClusterIdentifier}-db1"
+#   DatabaseCluster:
+#     Type: "AWS::RDS::DBCluster"
+#     Properties:
+#       DBSubnetGroupName: !Ref "DbSubnetGroup"
+#       VpcSecurityGroupIds:
+#       - Ref: "PMRDSSG"
+#       Engine: !Ref "PMDatabaseEngine"
+#       EngineVersion: !Ref "PMDatabaseEngineVer"
+#       MasterUsername: !Ref "PMDatabaseUsername"
+#       MasterUserPassword: !Ref "PMDatabasePassword"
+#       DBClusterParameterGroupName: !Ref "PMDBClusterParameterGroupName"
+#       StorageEncrypted: 'true'
+#       BackupRetentionPeriod: '3'
+#       PreferredBackupWindow: '12:00-13:00'
+#       PreferredMaintenanceWindow: 'mon:13:00-mon:14:00'
 
-  Database2:
-    Type: "AWS::RDS::DBInstance"
-    Properties:
-      Engine: !Ref "PMDatabaseEngine"
-      DBClusterIdentifier: !Ref "DatabaseCluster"
-      DBInstanceClass: !Ref "PMDatabaseInstanceClass"
-      DBSubnetGroupName: !Ref "DbSubnetGroup"
-      DBInstanceIdentifier: !Sub "${PMDBClusterIdentifier}-db2"
+#   Database1:
+#     Type: "AWS::RDS::DBInstance"
+#     Properties:
+#       Engine: !Ref "PMDatabaseEngine"
+#       DBClusterIdentifier: !Ref "DatabaseCluster"
+#       DBInstanceClass: !Ref "PMDatabaseInstanceClass"
+#       DBSubnetGroupName: !Ref "DbSubnetGroup"
+#       DBInstanceIdentifier: !Sub "${PMDBClusterIdentifier}-db1"
 
-Outputs:
+#   Database2:
+#     Type: "AWS::RDS::DBInstance"
+#     Properties:
+#       Engine: !Ref "PMDatabaseEngine"
+#       DBClusterIdentifier: !Ref "DatabaseCluster"
+#       DBInstanceClass: !Ref "PMDatabaseInstanceClass"
+#       DBSubnetGroupName: !Ref "DbSubnetGroup"
+#       DBInstanceIdentifier: !Sub "${PMDBClusterIdentifier}-db2"
 
-  RdsDbId:
-    Description: "RDS Database Cluster ID"
-    Value: !Ref "DatabaseCluster"
+# Outputs:
 
-  DbName:
-    Description: "RDS Database Name"
-    Value: !Ref "PMDatabaseName"
+#   RdsDbId:
+#     Description: "RDS Database Cluster ID"
+#     Value: !Ref "DatabaseCluster"
 
-  RdsEndpointAdd:
-    Description: "RDS Database Endpoint"
-    Value: !GetAtt "DatabaseCluster.Endpoint.Address"
+#   DbName:
+#     Description: "RDS Database Name"
+#     Value: !Ref "PMDatabaseName"
 
-  RdsReadEndpointAdd:
-    Description: "RDS Read Database Endpoint"
-    Value: !GetAtt "DatabaseCluster.ReadEndpoint.Address"
+#   RdsEndpointAdd:
+#     Description: "RDS Database Endpoint"
+#     Value: !GetAtt "DatabaseCluster.Endpoint.Address"
 
-  RdsEndpointPort:
-    Description: "RDS Database Port"
-    Value: !GetAtt "DatabaseCluster.Endpoint.Port"
+#   RdsReadEndpointAdd:
+#     Description: "RDS Read Database Endpoint"
+#     Value: !GetAtt "DatabaseCluster.ReadEndpoint.Address"
 
-  DbUser:
-    Description: "RDS Database admin account user"
-    Value: !Ref "PMDatabaseUsername"
+#   RdsEndpointPort:
+#     Description: "RDS Database Port"
+#     Value: !GetAtt "DatabaseCluster.Endpoint.Port"
 
-  DbPassword:
-    Description: "RDS Database admin account password"
-    Value: !Ref "PMDatabasePassword"
+#   DbUser:
+#     Description: "RDS Database admin account user"
+#     Value: !Ref "PMDatabaseUsername"
+
+#   DbPassword:
+#     Description: "RDS Database admin account password"
+#     Value: !Ref "PMDatabasePassword"

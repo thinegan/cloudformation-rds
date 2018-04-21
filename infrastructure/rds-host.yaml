@@ -39,10 +39,6 @@ Parameters:
     NoEcho: 'true'
     Type: "String"
     Description: "Database admin account password"
-
-  PMDatabaseName:
-    Type: "String"
-    Description: "Database name"
         
   PMDatabaseEngine:
     Type: "String"
@@ -85,7 +81,6 @@ Resources:
       MasterUsername: !Ref "PMDatabaseUsername"
       MasterUserPassword: !Ref "PMDatabasePassword"
       DBClusterParameterGroupName: !Ref "RDSDBClusterParameterGroup"
-      # DBClusterParameterGroupName: !Ref "PMDBClusterParameterGroupName"
       StorageEncrypted: 'true'
       BackupRetentionPeriod: '3'
       PreferredBackupWindow: '12:00-13:00'
@@ -114,10 +109,6 @@ Outputs:
   RdsDbId:
     Description: "RDS Database Cluster ID"
     Value: !Ref "DatabaseCluster"
-
-  DbName:
-    Description: "RDS Database Name"
-    Value: !Ref "PMDatabaseName"
 
   RdsEndpointAdd:
     Description: "RDS Database Endpoint"

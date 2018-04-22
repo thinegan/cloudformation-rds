@@ -56,10 +56,9 @@ The templates below are included in this repository and reference architecture:
 | Template | Description |
 | --- | --- | 
 | [master.yaml](master.yaml) | This is the master template - deploy it to CloudFormation and it includes all of the nested templates automatically. |
-| [infrastructure/rds-securitygroup.yaml](infrastructure/rds-securitygroup.yaml) | This template deploys will create policy to allow EC2 instance full access to S3 & CloudWatch, and VPC Logs to CloudWatch. |
-| [infrastructure/rds-host.yaml](infrastructure/rds-host.yaml) | This template deploys Backup Data Bucket with security data at rest and archive objects greater than 60 days, and ELB logging. |
-| [infrastructure/rds-route53.yaml](infrastructure/rds-route53.yaml) | This template deploys a VPC with a pair of public and private subnets spread across two Availability Zones. It deploys an [Internet gateway](http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_Internet_Gateway.html), with a default route on the public subnets. It deploys 2 [NAT gateways](http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/vpc-nat-comparison.html), and default routes for them in the private subnets. |
-| [infrastructure/vpc-nacl.yaml](infrastructure/vpc-nacl.yaml) | [Network ACLs](http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_ACLs.html) required by the entire stack. |
+| [infrastructure/rds-securitygroup.yaml](infrastructure/rds-securitygroup.yaml) | This template contains the [security groups](http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_SecurityGroups.html) required by the entire stack. |
+| [infrastructure/rds-host.yaml](infrastructure/rds-host.yaml) | This template deploys a (Mysql Aurora) Relational Database Service. |
+| [infrastructure/rds-route53.yaml](infrastructure/rds-route53.yaml) | This template deploys Route 53 recordset to update RDS Cluster Alias with CNAME entry. |
 
 After the CloudFormation templates have been deployed, the [stack outputs](http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/outputs-section-structure.html) contain a link to the site URLs.
 
@@ -90,37 +89,43 @@ Example using AWS CLI Command :
 ```
 Example Setup:
 
-Stage1 (~ 10 - 15 minutes)
+Run Time (~ 30 - 40 minutes)
 ===========================
 To create a environment :
 aws cloudformation create-stack \
 --stack-name <env> \
 --capabilities=CAPABILITY_IAM \
---template-body file:////path_to_template//cloudformation-vpc//master.yaml
+--template-body file:////path_to_template//cloudformation-rds//master.yaml
 
 To update a environment :
 aws cloudformation update-stack \
 --stack-name <env> \
 --capabilities=CAPABILITY_IAM \
---template-body file:////path_to_template//cloudformation-vpc//master.yaml
+--template-body file:////path_to_template//cloudformation-rds//master.yaml
 
 To delete a environment :
 aws cloudformation delete-stack --stack-name <env>
 
-<env> - Note :stack-name that can be used are (devVPC, stagingVPC, prodVPC)
+<env> - Note :stack-name that can be used are (devRDS, stagingRDS, prodRDS)
 
 Example :
 aws cloudformation create-stack \
---stack-name devVPC \
+--stack-name devRDS \
 --capabilities=CAPABILITY_IAM \
---parameters ParameterKey=PMOWNIP,ParameterValue=0.0.0.0/0 \
---parameters ParameterKey=PMPrivateSubnet1CIDR,ParameterValue=10.0.3.0/24 \
---parameters ParameterKey=PMPrivateSubnet2CIDR,ParameterValue=10.0.4.0/24 \
---parameters ParameterKey=PMPublicSubnet1CIDR,ParameterValue=10.0.1.0/24 \
---parameters ParameterKey=PMPublicSubnet2CIDR,ParameterValue=10.0.2.0/24 \
---parameters ParameterKey=PMTemplateURL,ParameterValue=https://s3.amazonaws.com/cf-templates-hyv79l0oex7c-us-east-1/cloudformation-vpc/infrastructure \
---parameters ParameterKey=PMVpcCIDR,ParameterValue=10.0.0.0/16 \
---template-body file:////path_to_template//cloudformation-vpc//master.yaml
+--parameters ParameterKey=PMDBClusterIdentifier,ParameterValue=devcrytera \
+--parameters ParameterKey=PMDBClusterParameterGroupName,ParameterValue=aurora-mysql5.7 \
+--parameters ParameterKey=PMDatabaseEngine,ParameterValue=aurora-mysql \
+--parameters ParameterKey=PMDatabaseEngineVer,ParameterValue=5.7.12 \
+--parameters ParameterKey=PMDatabaseInstanceClass,ParameterValue=db.t2.small \
+--parameters ParameterKey=PMDatabasePassword,ParameterValue=xxxxxx \
+--parameters ParameterKey=PMDatabaseUsername,ParameterValue=ausertest1 \
+--parameters ParameterKey=PMDomainSub,ParameterValue=myrds1 \
+--parameters ParameterKey=PMDomainSubRO,ParameterValue=myrds1ro \
+--parameters ParameterKey=PMEnvVPC,ParameterValue=devVPC \
+--parameters ParameterKey=PMHostedZone,ParameterValue=crytera.com \
+--parameters ParameterKey=PMKeyName,ParameterValue=mykey_nv \
+--parameters ParameterKey=PMTemplateURL,ParameterValue=https://s3.amazonaws.com/cf-templates-hyv79l0oex7c-us-east-1/cloudformation-rds/infrastructure \
+--template-body file:////path_to_template//cloudformation-rds//master.yaml
 	
 ```
 
@@ -128,27 +133,13 @@ aws cloudformation create-stack \
 
 Deploy another CloudFormation stack from the same set of templates to create a new environment. The stack name provided when deploying the stack is prefixed to all taggable resources (e.g., EC2 instances, VPCs, etc.) so you can distinguish the different environment resources in the AWS Management Console. 
 
-### Change the VPC or subnet IP ranges
-
-This set of templates deploys the following network design:
-
-| Item | CIDR Range | Usable IPs | Description |
-| --- | --- | --- | --- |
-| VPC | 10.0.0.0/16 | 65,536 | The whole range used for the VPC and all subnets |
-| Public Subnet 1 | 10.0.1.0/24 | 251 | The public subnet in the first Availability Zone |
-| Public Subnet 2 | 10.0.2.0/24 | 251 | The public subnet in the second Availability Zone |
-| Private Subnet 1 | 10.0.3.0/24 | 251 | The private subnet in the first Availability Zone |
-| Private Subnet 2 | 10.0.4.0/24 | 251 | The private subnet in the second Availability Zone |
-
-You can adjust the following section of the parameter template:
-
 ### Add a new item to this list
 
 If you found yourself wishing this set of frequently asked questions had an answer for a particular problem, please [submit a pull request](https://help.github.com/articles/creating-a-pull-request-from-a-fork/). The chances are that others will also benefit from having the answer listed here.
 
 ## Contributing
 
-Please [create a new GitHub issue](https://github.com/thinegan/cloudformation-jira/issues/new) for any feature requests, bugs, or documentation improvements. 
+Please [create a new GitHub issue](https://github.com/thinegan/cloudformation-rds/issues/new) for any feature requests, bugs, or documentation improvements. 
 
 Where possible, please also [submit a pull request](https://help.github.com/articles/creating-a-pull-request-from-a-fork/) for the change. 
 
@@ -159,6 +150,6 @@ Thinegan Ratnam
 
 ## Copyright and License
 
-Copyright 2017 Thinegan Ratnam
+Copyright 2018 Thinegan Ratnam
 
 Code released under the MIT License.

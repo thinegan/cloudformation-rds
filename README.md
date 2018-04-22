@@ -21,7 +21,7 @@ This template describes a VPC with two private and two public subnets.
 ![infrastructure-overview](images/Multi_AZ_with_RDS_Aurora_Cluster.png)
 
 ### Installation Guide
-1. [![Launch Stack](https://cdn.rawgit.com/buildkite/cloudformation-launch-stack-button-svg/master/launch-stack.svg)](https://console.aws.amazon.com/cloudformation/home#/stacks/new?stackName=devVPC&templateURL=https://s3.amazonaws.com/cf-templates-hyv79l0oex7c-us-east-1/cloudformation-rds/master.yaml)
+1. [![Launch Stack](https://cdn.rawgit.com/buildkite/cloudformation-launch-stack-button-svg/master/launch-stack.svg)](https://console.aws.amazon.com/cloudformation/home#/stacks/new?stackName=devRDS&templateURL=https://s3.amazonaws.com/cf-templates-hyv79l0oex7c-us-east-1/cloudformation-rds/master.yaml)
 2. Click Next to proceed with the next step of the wizard.
 3. Specify a name and all parameters for the stack.
 4. Click Next to proceed with the next step of the wizard.
@@ -63,6 +63,18 @@ The templates below are included in this repository and reference architecture:
 After the CloudFormation templates have been deployed, the [stack outputs](http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/outputs-section-structure.html) contain a link to the site URLs.
 
 ![stack-outputs](images/rds_cloudformation_output.png)
+
+![rds_cluster_1](images/rds_cluster_1.png)
+
+![rds_cluster_2](images/rds_cluster_2.png)
+
+![rds_instance_1](images/rds_instance_1.png)
+
+![rds_instance_2](images/rds_instance_2.png)
+
+![rds_instance_3](images/rds_instance_3.png)
+
+![rds_instance_4](images/rds_instance_4.png)
 
 ## How do I...?
 

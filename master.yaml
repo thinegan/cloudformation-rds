@@ -1,0 +1,134 @@
+# Note : The Cloudformation Security Group IP address is open by default (testing purpose).
+# You should update Security Group Access with your own IP Address to ensure your instances security.
+#
+# Prerequisites
+# Before you can start this process, you need the following:
+# - Your AWS account must have one VPC available to be created in the selected region
+# - Amazon EC2 key pair
+# - Installed Domain in Route 53.
+#
+---
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+    Setup RDS Mysql Arora Cluster
+
+    Last Modified: 15th April 2018
+    Author: Thinegan Ratnam <thinegan@thinegan.com>
+
+###############################################################################################################
+
+Parameters: 
+
+  PMKeyName:
+    Description: "Enter an existing EC2 KeyPair."
+    Type: "String" 
+
+  PMTemplateURL:
+    Description: "Trying running from s3 bucket."
+    Type: "String"
+
+  PMHostedZone:
+    Description: "Set HostedZone Name"
+    Type: "String"
+
+  PMDomainSub:
+    Description: "Set Sub Domain Name"
+    Type: "String"
+
+  PMDomainSubRO:
+    Description: "Set Sub Domain Name ReadOnly"
+    Type: "String"
+  
+  PMEnvVPC:
+    Description: "Stack VPC Environment"
+    Type: "String"
+
+  PMDatabaseUsername:
+    Description: "Enter DB username."
+    Type: "String"
+
+  PMDatabasePassword:
+    Description: "Enter DB password."
+    Type: "String"
+
+  PMDatabaseEngine:
+    Description: "Db Type."
+    Type: "String"
+
+  PMDatabaseEngineVer:
+    Description: "Db Version."
+    Type: "String"
+
+  PMDatabaseInstanceClass:
+    Description: "Db Instance type."
+    Type: "String"
+
+  PMDBClusterIdentifier:
+    Description: "Db Cluster Name."
+    Type: "String"
+
+  PMDBClusterParameterGroupName:
+    Description: "Db Parameter Groupname"
+    Type: "String"
+
+###############################################################################################################
+
+Resources:
+
+  MySecurityGroup:
+    Type: "AWS::CloudFormation::Stack"
+    Properties:
+      TemplateURL: !Sub "${PMTemplateURL}/rds-securitygroup.yaml"
+      TimeoutInMinutes: '5'
+      Parameters:
+        PMServerEnv: !Ref "AWS::StackName"
+        PMVPC:
+          Fn::ImportValue: !Sub "${PMEnvVPC}-VPC"
+
+  MyRDS:
+    Type: "AWS::CloudFormation::Stack"
+    DependsOn:
+    - "MySecurityGroup"
+    Properties:
+      TemplateURL: !Sub "${PMTemplateURL}/rds-host.yaml"
+      TimeoutInMinutes: '30'
+      Parameters:
+        PMServerEnv: !Ref "AWS::StackName"
+        PMDatabaseUsername: !Ref "PMDatabaseUsername"
+        PMDatabasePassword: !Ref "PMDatabasePassword"
+        PMDatabaseEngine: !Ref "PMDatabaseEngine"
+        PMDatabaseEngineVer: !Ref "PMDatabaseEngineVer"
+        PMDatabaseInstanceClass: !Ref "PMDatabaseInstanceClass"
+        PMDBClusterIdentifier: !Ref "PMDBClusterIdentifier"
+        PMDBClusterParameterGroupName: !Ref "PMDBClusterParameterGroupName"
+        PMRDSSG: !GetAtt "MySecurityGroup.Outputs.MyRDSSG"
+        PMPrivateSubnets:
+          Fn::ImportValue: !Sub "${PMEnvVPC}-PrivateSubnets"
+
+  MyDNS:
+    Type: "AWS::CloudFormation::Stack"
+    DependsOn:
+    - "MyRDS"
+    Properties:
+      TemplateURL: !Sub "${PMTemplateURL}/rds-route53.yaml"
+      TimeoutInMinutes: '5'
+      Parameters:
+        PMRdsEndpointAdd: !GetAtt "MyRDS.Outputs.RdsEndpointAdd"
+        PMRdsReadEndpointAdd: !GetAtt "MyRDS.Outputs.RdsReadEndpointAdd"
+        PMDomainSub: !Ref "PMDomainSub"
+        PMDomainSubRO: !Ref "PMDomainSubRO"
+        PMHostedZone: !Ref "PMHostedZone"
+
+Outputs:
+
+  MyRDSEndpointAdd:
+    Description: "RDS Endpoint Address to use"
+    Value: !GetAtt "MyDNS.Outputs.RdsRoute53"
+
+  MyRDSROEndpointAdd:
+    Description: "RDS ReadOnly Endpoint Address to use"
+    Value: !GetAtt "MyDNS.Outputs.RdsRoRoute53"
+
+  MyRDSEndpointPort:
+    Description: "RDS Endpoint Port to use"
+    Value: !GetAtt "MyRDS.Outputs.RdsEndpointPort"

@@ -68,7 +68,9 @@ Resources:
       Description: "CloudFormation Sample Aurora Cluster Parameter Group"
       Family: !Ref "PMDBClusterParameterGroupName"
       Parameters:
-        time_zone: "US/Eastern"
+        time_zone: "UTC"
+        collation_connection: "utf8_general_ci"
+        character_set_database: "utf8"
 
   DatabaseCluster:
     Type: "AWS::RDS::DBCluster"

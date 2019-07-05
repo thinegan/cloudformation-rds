@@ -5,7 +5,7 @@ This reference architecture provides a set of YAML templates for deploying the f
 - Amazon S3
 - Amazon VPC
 - Amazon NACL
-
+ 
 ## Prerequisites Notes
 The Cloudformation Security Group IP address is open by default (testing purpose). You should update the Security Group Access with your own IP Address to ensure your instances security.
 

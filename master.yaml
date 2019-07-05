@@ -91,7 +91,7 @@ Resources:
     - "MySecurityGroup"
     Properties:
       TemplateURL: !Sub "${PMTemplateURL}/rds-host.yaml"
-      TimeoutInMinutes: '30'
+      TimeoutInMinutes: '40'
       Parameters:
         PMServerEnv: !Ref "AWS::StackName"
         PMDatabaseUsername: !Ref "PMDatabaseUsername"
